@@ -64,15 +64,31 @@ pub fn two_sum(sorted: &[u32], target: u32) -> Option<(u32, u32)> {
     }
 }
 
-/// Tries to find a triplet that sums to a target integer value.
-/// ## Assumptions
-/// input array is sorted.
+/// Tries to find a triplet that sums to a target.
+///
+/// # Arguments
+///
+/// - `sorted`  - A **sorted** array slice.
+/// - `target`  - The sum we are looking for.
+///
+/// # Assumptions
+///
+/// The input array slice `sorted` is sorted and does not contain zeros.
+///
+/// # Implementation Details
+///
+/// Iterates over the array for pivot values and then uses `two_sum()` to find a
+/// suitable pair to complete the sum. Its performance is O(n^2).
+///
+/// todo: there is an algorithm for three_sum that uses FFT. Check Wikipedia
+/// later.
 fn three_sum(sorted: &[u32], target: u32) -> Option<(u32, u32, u32)> {
-    for &pivot in sorted {
-        if pivot > target {
-            break;
-        }
-        if let Some((a, b)) = two_sum(sorted, target - pivot) {
+    let iter = sorted
+        .into_iter()
+        .enumerate()
+        .take_while(|(_, &pivot)| pivot < target);
+    for (i, &pivot) in iter {
+        if let Some((a, b)) = two_sum(&sorted[i + 1..], target - pivot) {
             return Some((pivot, a, b));
         }
     }
@@ -106,7 +122,7 @@ mod tests {
     use test::Bencher;
 
     lazy_static! {
-        static ref INPUT: Vec<u32> = vec![299, 366, 675, 979, 1456, 1721];
+        static ref INPUT: Vec<u32> = vec![282, 299, 366, 675, 979, 1456, 1721];
         static ref PARSED: Vec<u32> =
             parse_input(&helpers::read_to_str("day01").expect("Unable to read file."));
     }
@@ -129,8 +145,14 @@ mod tests {
     #[test]
     fn test_three_sum() {
         assert_eq!(three_sum(INPUT.as_ref(), 1041), None);
+        assert_ne!(
+            three_sum(INPUT.as_ref(), 2020),
+            Some((282, 282, 1456)),
+            "Corner case, pivot is being used again"
+        );
         assert_eq!(three_sum(INPUT.as_ref(), 2020), Some((366, 675, 979)));
     }
+
     //--------------------------------------------------------------------
     // Benches
     //--------------------------------------------------------------------
