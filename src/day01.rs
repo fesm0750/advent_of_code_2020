@@ -10,12 +10,21 @@ use crate::helpers;
 use std::cmp::Ordering;
 
 /// Parses a string containing the input data and returns a sorted array.
-/// input should be a list of values separated by the new line character. If an
-/// entry is negative or cannot be parsed, a value of zero is assigned.
+///
+/// # Arguments
+///
+///  - `input` - A string slice holding unsigned integer values separated by the
+///    new line character.
+///
+/// # Implementation Details
+///
+/// Values that are zero, negative or cannot be parsed are not included in the
+/// output.
 pub fn parse_input(input: &str) -> Vec<u32> {
     let mut out: Vec<u32> = input
         .lines()
         .map(|l| if let Ok(x) = l.parse::<u32>() { x } else { 0 })
+        .filter(|&v| v > 0)
         .collect();
     out.sort();
     out
@@ -104,7 +113,7 @@ mod tests {
 
     #[test]
     fn test_parser() {
-        let input = "1721\n979\n366\n299\n675\n1456\n282";
+        let input = "1721\n979\n0\n366\n299\n675\n1456\n282";
         assert_eq!(parse_input(input), *INPUT);
     }
 
