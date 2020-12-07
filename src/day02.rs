@@ -28,8 +28,8 @@ use crate::helpers;
 #[derive(Debug, PartialEq, Eq)]
 pub struct PasswordRecord {
     ch: char,
-    min: u8,
-    max: u8,
+    lower: u8,
+    upper: u8,
     pass: String,
 }
 
@@ -37,7 +37,7 @@ impl PasswordRecord {
     /// Checks whether or not a password is valid according to the old policy.
     pub fn is_valid_old(&self) -> bool {
         let count = self.pass.chars().filter(|&c| c == self.ch).count() as u8;
-        self.min <= count && count <= self.max
+        self.lower <= count && count <= self.upper
     }
 
     /// Checks whether or not a password is valid according to the new policy.
@@ -49,8 +49,8 @@ impl PasswordRecord {
     pub fn is_valid_new(&self) -> bool {
         let ch = self.ch;
         let mut chars = self.pass.chars();
-        let pos1 = (self.min - 1) as usize;
-        let pos2 = (self.max - self.min - 1) as usize;
+        let pos1 = (self.lower - 1) as usize;
+        let pos2 = (self.upper - self.lower - 1) as usize;
         let c1 = chars.nth(pos1).expect("Invalid index.");
         let c2 = chars.nth(pos2).expect("Invalid index.");
         (c1 == ch) ^ (c2 == ch)
@@ -86,8 +86,8 @@ impl FromStr for PasswordRecord {
         let pass = iter.next().ok_or(ParseDay02Error)?.to_owned();
         Ok(PasswordRecord {
             ch: letter,
-            min,
-            max,
+            lower: min,
+            upper: max,
             pass,
         })
     }
@@ -164,20 +164,20 @@ mod tests {
 
     lazy_static! {
         static ref P1: PasswordRecord = PasswordRecord {
-            min: 1,
-            max: 3,
+            lower: 1,
+            upper: 3,
             ch: 'a',
             pass: "abcde".to_owned(),
         };
         static ref P2: PasswordRecord = PasswordRecord {
-            min: 1,
-            max: 3,
+            lower: 1,
+            upper: 3,
             ch: 'b',
             pass: "cdefg".to_owned(),
         };
         static ref P3: PasswordRecord = PasswordRecord {
-            min: 2,
-            max: 9,
+            lower: 2,
+            upper: 9,
             ch: 'c',
             pass: "ccccccccc".to_owned(),
         };
