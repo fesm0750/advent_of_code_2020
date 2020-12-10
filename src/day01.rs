@@ -135,11 +135,11 @@ mod tests {
 
     #[test]
     fn test_two_sum() {
-        assert_eq!(two_sum(INPUT.as_ref(), 1041), Some((366, 675)));
-        assert_eq!(two_sum(INPUT.as_ref(), 1653), None);
-        assert_eq!(two_sum(INPUT.as_ref(), 1654), Some((675, 979)));
-        assert_eq!(two_sum(INPUT.as_ref(), 1655), None);
-        assert_eq!(two_sum(INPUT.as_ref(), 2020), Some((299, 1721)));
+        assert_eq!(two_sum(&INPUT, 1041), Some((366, 675)));
+        assert_eq!(two_sum(&INPUT, 1653), None);
+        assert_eq!(two_sum(&INPUT, 1654), Some((675, 979)));
+        assert_eq!(two_sum(&INPUT, 1655), None);
+        assert_eq!(two_sum(&INPUT, 2020), Some((299, 1721)));
     }
 
     #[test]
