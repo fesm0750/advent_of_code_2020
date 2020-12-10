@@ -1,8 +1,11 @@
 //! Day 01
 //!
-//! ## Problem:
+//! # Problem:
+//!
 //! From an input file containig unsigned integer values:
+//!
 //! 1. find two entries that sum to 2020 and multiply those numbers together;
+//!
 //! 2. find three entries that sum to 2020 and multiply them together.
 
 extern crate test;
@@ -10,6 +13,8 @@ extern crate test;
 use std::cmp::Ordering;
 
 use crate::helpers::read;
+
+/// Parses a string containing the input data and returns a sorted `vec`.
 ///
 /// # Arguments
 ///

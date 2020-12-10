@@ -9,6 +9,10 @@
 //!
 //! 2. Count the number of valid passwords according to the new policy.
 
+// TODO:
+// - Explore parsers, check parse_display;
+// - Improve error handling;
+
 use std::error::Error;
 use std::fmt;
 use std::str::FromStr;
@@ -108,7 +112,7 @@ impl fmt::Display for ParseDay02Error {
 // Helpers
 //--------------------------------------------------------------------
 
-/// Parses a string containing the input data and returns a `vec` of
+/// Parses a string containing the input data and returns a `Vec` of
 /// `Password`s.
 /// `input` - a string slice holding password records with entries separated by
 /// the new line character.
