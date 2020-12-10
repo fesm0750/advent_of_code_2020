@@ -72,22 +72,22 @@ pub fn count_for_many(forest: &Grid<bool>, slopes: &[Base2d<usize>]) -> Vec<u32>
 
 pub fn run() {
     let str = read::read_to_str("day03").unwrap();
-    let forrest = parse_input(&str);
+    let forest = parse_input(&str);
     // Parte 01
     println!("Day 03");
     println!(
         "Number of collisions: {}",
-        count_collisions(&forrest, (3, 1).try_into().unwrap())
+        count_collisions(&forest, (3, 1).try_into().unwrap())
     );
     // Parte 02
-    // use tuples for creating the `Base2d` slopes
+    // using tuples for creating the `Base2d` slopes
     let slopes: Vec<Base2d<usize>> = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
         .iter()
         .map(|&v| v.try_into().unwrap())
         .collect();
     println!(
         "Product: {}",
-        count_for_many(&forrest, &slopes)
+        count_for_many(&forest, &slopes)
             .into_iter()
             .product::<u32>()
     );
