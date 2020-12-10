@@ -6,10 +6,10 @@
 //! 2. find three entries that sum to 2020 and multiply them together.
 
 extern crate test;
-use crate::helpers;
+
 use std::cmp::Ordering;
 
-/// Parses a string containing the input data and returns a sorted array.
+use crate::helpers::read;
 ///
 /// # Arguments
 ///
@@ -100,8 +100,8 @@ pub fn three_sum(sorted: &[u32], target: u32) -> Option<(u32, u32, u32)> {
 //--------------------------------------------------------------------
 
 pub fn run() {
-    let str = &helpers::read_to_str("day01").expect("Unable to read file.");
-    let sorted = parse_input(str);
+    let str = read::read_to_str("day01").expect("Unable to read file.");
+    let sorted = parse_input(&str);
     // part 01
     let (a, b) = two_sum(&sorted, 2020).expect("No pair of values found.");
     // part 02
@@ -124,7 +124,7 @@ mod tests {
     lazy_static! {
         static ref INPUT: Vec<u32> = vec![282, 299, 366, 675, 979, 1456, 1721];
         static ref PARSED: Vec<u32> =
-            parse_input(&helpers::read_to_str("day01").expect("Unable to read file."));
+            parse_input(&read::read_to_str("day01").expect("Unable to read file."));
     }
 
     #[test]

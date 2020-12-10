@@ -13,7 +13,7 @@ use std::error::Error;
 use std::fmt;
 use std::str::FromStr;
 
-use crate::helpers;
+use crate::helpers::read;
 
 //--------------------------------------------------------------------
 // Password Data Structure
@@ -139,7 +139,7 @@ pub fn count_valid_new(passwords: &[PasswordRecord]) -> usize {
 //--------------------------------------------------------------------
 
 pub fn run() {
-    let str = helpers::read_to_str("day02").unwrap();
+    let str = read::read_to_str("day02").unwrap();
     let passwords = parse_input(&str);
     println!("Day 02");
     println!(
