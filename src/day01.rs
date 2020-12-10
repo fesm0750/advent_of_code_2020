@@ -82,7 +82,7 @@ pub fn two_sum(sorted: &[u32], target: u32) -> Option<(u32, u32)> {
 ///
 /// todo: there is an algorithm for three_sum that uses FFT. Check Wikipedia
 /// later.
-fn three_sum(sorted: &[u32], target: u32) -> Option<(u32, u32, u32)> {
+pub fn three_sum(sorted: &[u32], target: u32) -> Option<(u32, u32, u32)> {
     let iter = sorted
         .into_iter()
         .enumerate()
