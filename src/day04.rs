@@ -1,15 +1,12 @@
-// todo: change all fields in `Passport` to `Option<String>`. Parsing accepts
-// leading zeros and some values are required to have an exact number of
-// characters.
 // todo: test all individual closure conditions in
-// `is_valid_complete`
+// `is_valid`
 use crate::helpers::read;
 
 #[derive(Debug, Default, PartialEq, Eq, Clone)]
 pub struct Passport {
-    pub byr: Option<u16>,    // birth year
-    pub iyr: Option<u16>,    // issue year
-    pub eyr: Option<u16>,    // expiration year
+    pub byr: Option<String>, // birth year
+    pub iyr: Option<String>, // issue year
+    pub eyr: Option<String>, // expiration year
     pub cid: Option<String>, // country id
     pub pid: Option<String>, // passport id
     pub hgt: Option<String>, // height
@@ -18,19 +15,20 @@ pub struct Passport {
 }
 
 impl Passport {
-    /// Panics if key cannot be parsed.
-    /// if value cannot be parsed insert None inside the struct again.
+    /// Panics if key cannot be matched.
     pub fn add_key(&mut self, key: &str, value: &str) {
+        let get = || -> Option<String> { Some(value.to_owned()) };
+
         match key {
-            "byr" => self.byr = value.parse().ok(),
-            "iyr" => self.iyr = value.parse().ok(),
-            "eyr" => self.eyr = value.parse().ok(),
-            "cid" => self.cid = Some(value.to_owned()),
-            "pid" => self.pid = Some(value.to_owned()),
-            "hgt" => self.hgt = Some(value.to_owned()),
-            "hcl" => self.hcl = Some(value.to_owned()),
-            "ecl" => self.ecl = Some(value.to_owned()),
-            _ => panic!("Unexpected key value for Passport."),
+            "byr" => self.byr = get(),
+            "iyr" => self.iyr = get(),
+            "eyr" => self.eyr = get(),
+            "cid" => self.cid = get(),
+            "pid" => self.pid = get(),
+            "hgt" => self.hgt = get(),
+            "hcl" => self.hcl = get(),
+            "ecl" => self.ecl = get(),
+            _ => panic!("Unexpected field key for Passport."),
         }
     }
 
@@ -51,6 +49,23 @@ impl Passport {
                 if min <= x && x <= max {
                     return true;
                 }
+            }
+            false
+        };
+
+        // closure to validate year values
+        let check_year_range = |value: &Option<String>, min: u16, max: u16| -> bool {
+            if let Some(str) = value {
+                if str.chars().count() != 4 {
+                    return false;
+                }
+
+                let year: Option<u16> = str.parse().ok();
+                if year.is_none() {
+                    return false;
+                }
+
+                return check_range(year, min, max);
             }
             false
         };
@@ -127,9 +142,9 @@ impl Passport {
             false
         };
 
-        let byr = check_range(self.byr, 1920, 2002);
-        let iyr = check_range(self.iyr, 2010, 2020);
-        let eyr = check_range(self.eyr, 2020, 2030);
+        let byr = check_year_range(&self.byr, 1920, 2002);
+        let iyr = check_year_range(&self.iyr, 2010, 2020);
+        let eyr = check_year_range(&self.eyr, 2020, 2030);
         let pid = check_pid();
         let hgt = check_hgt();
         let hcl = check_hcl();
@@ -255,38 +270,38 @@ iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719";
             Passport {
                 ecl: Some("gry".to_owned()),
                 pid: Some("860033327".to_owned()),
-                eyr: Some(2020),
+                eyr: Some("2020".to_owned()),
                 hcl: Some("#fffffd".to_owned()),
-                byr: Some(1937),
-                iyr: Some(2017),
+                byr: Some("1937".to_owned()),
+                iyr: Some("2017".to_owned()),
                 cid: Some("147".to_owned()),
                 hgt: Some("183cm".to_owned()),
             },
             Passport {
-                iyr: Some(2013),
+                iyr: Some("2013".to_owned()),
                 ecl: Some("amb".to_owned()),
                 cid: Some("350".to_owned()),
-                eyr: Some(2023),
+                eyr: Some("2023".to_owned()),
                 pid: Some("028048884".to_owned()),
                 hcl: Some("#cfa07d".to_owned()),
-                byr: Some(1929),
+                byr: Some("1929".to_owned()),
                 ..Passport::default()
             },
             Passport {
                 hcl: Some("#ae17e1".to_owned()),
-                iyr: Some(2013),
-                eyr: Some(2024),
+                iyr: Some("2013".to_owned()),
+                eyr: Some("2024".to_owned()),
                 ecl: Some("brn".to_owned()),
                 pid: Some("760753108".to_owned()),
-                byr: Some(1931),
+                byr: Some("1931".to_owned()),
                 hgt: Some("179cm".to_owned()),
                 ..Passport::default()
             },
             Passport {
                 hcl: Some("#cfa07d".to_owned()),
-                eyr: Some(2025),
+                eyr: Some("2025".to_owned()),
                 pid: Some("166559648".to_owned()),
-                iyr: Some(2011),
+                iyr: Some("2011".to_owned()),
                 ecl: Some("brn".to_owned()),
                 hgt: Some("59in".to_owned()),
                 ..Passport::default()
