@@ -31,7 +31,7 @@ pub fn parse_input(input: &str) -> Vec<u32> {
         .map(|l| if let Ok(x) = l.parse::<u32>() { x } else { 0 })
         .filter(|&v| v > 0)
         .collect();
-    out.sort();
+    out.sort_unstable();
     out
 }
 
@@ -89,7 +89,7 @@ pub fn two_sum(sorted: &[u32], target: u32) -> Option<(u32, u32)> {
 /// later.
 pub fn three_sum(sorted: &[u32], target: u32) -> Option<(u32, u32, u32)> {
     let iter = sorted
-        .into_iter()
+        .iter()
         .enumerate()
         .take_while(|(_, &pivot)| pivot < target);
     for (i, &pivot) in iter {
@@ -97,13 +97,14 @@ pub fn three_sum(sorted: &[u32], target: u32) -> Option<(u32, u32, u32)> {
             return Some((pivot, a, b));
         }
     }
-    return None;
+    None
 }
 
 //--------------------------------------------------------------------
 // Solution
 //--------------------------------------------------------------------
 
+#[allow(clippy::many_single_char_names)]
 pub fn run() {
     let str = read::read_to_str("day01").expect("Unable to read file.");
     let sorted = parse_input(&str);

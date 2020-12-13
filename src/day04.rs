@@ -1,5 +1,4 @@
-// todo: test all individual closure conditions in
-// `is_valid`
+// todo: test all individual closure conditions in `is_valid`
 use crate::helpers::read;
 
 #[derive(Debug, Default, PartialEq, Eq, Clone)]
@@ -28,7 +27,7 @@ impl Passport {
             "hgt" => self.hgt = get(),
             "hcl" => self.hcl = get(),
             "ecl" => self.ecl = get(),
-            _ => panic!("Unexpected field key for Passport."),
+            _ => panic!("`Unexpected key for Passport."),
         }
     }
 
@@ -70,7 +69,7 @@ impl Passport {
             false
         };
 
-        let check_pid = || -> bool {
+        let pid = {
             if let Some(str) = &self.pid {
                 if str.chars().count() == 9 && str.chars().all(|c| c.is_numeric()) {
                     return true;
@@ -79,7 +78,7 @@ impl Passport {
             false
         };
 
-        let check_hgt = || -> bool {
+        let hgt = {
             if let Some(str) = &self.hgt {
                 if str.len() < 2 {
                     return false;
@@ -111,7 +110,7 @@ impl Passport {
             false
         };
 
-        let check_hcl = || -> bool {
+        let hcl = {
             if let Some(str) = &self.hcl {
                 // check for correct size
                 if str.chars().count() != 7 {
@@ -132,7 +131,7 @@ impl Passport {
             false
         };
 
-        let check_ecl = || -> bool {
+        let ecl = {
             if let Some(str) = &self.ecl {
                 match &str[..] {
                     "amb" | "blu" | "brn" | "gry" | "grn" | "hzl" | "oth" => return true,
@@ -145,10 +144,6 @@ impl Passport {
         let byr = check_year_range(&self.byr, 1920, 2002);
         let iyr = check_year_range(&self.iyr, 2010, 2020);
         let eyr = check_year_range(&self.eyr, 2020, 2030);
-        let pid = check_pid();
-        let hgt = check_hgt();
-        let hcl = check_hcl();
-        let ecl = check_ecl();
 
         byr && iyr && eyr && pid && hgt && hcl && ecl
     }
@@ -161,8 +156,8 @@ impl Passport {
 /// - input data is well behaved.
 pub fn parse_input(input: &str) -> Vec<Passport> {
     let mut ret = vec![Passport::default()];
-    let mut lines = input.lines();
-    while let Some(line) = lines.next() {
+    let lines = input.lines();
+    for line in lines {
         if line.is_empty() {
             // add next entry if blank line
             ret.push(Passport::default());

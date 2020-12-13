@@ -61,7 +61,7 @@ pub fn count_collisions(forest: &Grid<bool>, slope: Base2d<usize>) -> u32 {
 /// - `slopes` - an array containing slopes to run.
 pub fn count_for_many(forest: &Grid<bool>, slopes: &[Base2d<usize>]) -> Vec<u32> {
     slopes
-        .into_iter()
+        .iter()
         .map(|&slope| count_collisions(forest, slope))
         .collect()
 }

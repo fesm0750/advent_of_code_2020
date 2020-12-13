@@ -46,7 +46,7 @@ pub fn highest_id(tickets: &[BoardingPass]) -> u32 {
 /// Returns the id of an empty seat in between two occupied ones.
 pub fn find_seat(tickets: &[BoardingPass]) -> Option<u32> {
     let mut seats: Vec<u32> = tickets.iter().map(BoardingPass::id).collect();
-    seats.sort();
+    seats.sort_unstable();
     let mut seats = seats.into_iter().peekable();
     while let Some(seat) = seats.next() {
         let peek = seats.peek().cloned();
