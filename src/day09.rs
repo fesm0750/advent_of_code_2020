@@ -1,18 +1,89 @@
-use std::{cmp::Ordering, collections::HashMap, iter::FromIterator};
+//! All values are supposed to be positive. Using i32 instead of u32 to avoid
+//! dealing with subtraction with overflow.
+
+// todo: test this solution using a HashMap in the iterator against a
+// brute-force one. The input may be not be bigger enough to justify the
+// hashmap.
+
+use std::{cmp::Ordering, collections::HashMap};
 
 use crate::helpers::read;
 
-#[derive(Default)]
-struct XmasBreaker {
-    numbers: Vec<i32>,
-    summing_pool: HashMap<i32, u8>, /* hashmap of allowable values to compose next number and
-                                     * their frequencies */
+/// An iterator over xmas data yielding the current xmas number and the values
+/// that sum to it.
+struct XmasIterator<'a> {
     curr: usize,
+    xmas: &'a [i32],
+    previous: HashMap<i32, u8>, /* hashmap of allowable values to compose next number and
+                                 * their frequencies, values may repeat */
 }
 
-/// failing parsing a number may result in the iterator prematurely ending
-fn parse_input(input_str: &str) -> XmasBreaker {
+//--------------------------------------------------------------------
+// Helpers
+//--------------------------------------------------------------------
+
+/// Failing parsing a number may result in the iterator prematurely ending
+fn parse_input(input_str: &str) -> Vec<i32> {
     input_str.lines().map(str::parse::<i32>).flatten().collect()
+}
+
+/// Returs the first number in `xmas` that is not a sum of the previous
+/// `POOL_LEN` (25) values.
+fn find_invalid(xmas: &[i32]) -> Option<i32> {
+    let iter = XmasIterator::new(xmas);
+    for (curr, sum) in iter {
+        if sum.is_none() {
+            return Some(curr);
+        }
+    }
+    None
+}
+
+/// Finds a contiguous slice inside the `xmas` input that sums to the
+/// target value. Uses a sliding and resizeble window.
+///
+/// # Assumptions
+/// xmas contains only positive and zero values.
+fn find_contiguous_set(xmas: &[i32], target: i32) -> Option<&[i32]> {
+    let mut start_idx = 0;
+    let mut sum = 0;
+
+    for (idx, &x) in xmas.iter().enumerate() {
+        sum += x;
+
+        while sum > target {
+            sum -= xmas[start_idx];
+            start_idx += 1;
+        }
+
+        if sum == target {
+            return Some(&xmas[start_idx..=idx]);
+        }
+    }
+    None
+}
+
+/// Helper method to find the minimum and maximum value in an slice. Returns a
+/// tuple (min, max). Uses the two cursors approach.
+fn min_max(slice: &[i32]) -> (i32, i32) {
+    let mut min = i32::MAX;
+    let mut max = i32::MIN;
+    for &x in slice {
+        if x > max {
+            max = x
+        }
+        if x < min {
+            min = x
+        }
+    }
+    (min, max)
+}
+
+/// find the weakness of the xmas encryption
+fn find_weakness(xmas: &[i32], invalid: i32) -> i32 {
+    let set = find_contiguous_set(xmas, invalid).unwrap();
+    let (min, max) = min_max(set);
+    min + max
 }
 
 //--------------------------------------------------------------------
@@ -22,100 +93,96 @@ fn parse_input(input_str: &str) -> XmasBreaker {
 pub fn run() {
     println!("Day 09");
     let input_str = read::read_to_str("day09").unwrap();
-    let mut xmas = parse_input(&input_str);
+    let xmas = parse_input(&input_str);
+    let invalid = find_invalid(&xmas).unwrap();
     println!(
         "First number, not in the preambule, that is not a sum of two numbers before it: {}",
-        xmas.find_weakness().unwrap()
+        invalid
     );
+    println!("Encryption Weakness: {}", find_weakness(&xmas, invalid));
 }
 
 //--------------------------------------------------------------------
 // Implementations
 //--------------------------------------------------------------------
 
-impl XmasBreaker {
+impl<'a> XmasIterator<'a> {
     const POOL_LEN: usize = 25; // preambule size
 
-    // Tries to advance the `curr` value and update the summing pool. Returns false
-    // if `curr` is already the last value, otherwise returns true indicating the
-    // `curr`ent value has been updated.
-    fn advance(&mut self) -> bool {
-        if self.curr >= self.numbers.len() - 1 {
-            false
-        } else {
-            let last = &self.numbers[self.curr - XmasBreaker::POOL_LEN];
-            if let Some(freq) = self.summing_pool.get(last) {
-                match freq.cmp(&1) {
-                    Ordering::Equal => {
-                        self.summing_pool.remove(last);
-                    }
-                    Ordering::Greater => {
-                        self.summing_pool.entry(*last).and_modify(|freq| *freq -= 1);
-                    }
-                    Ordering::Less => {
-                        unreachable!(
-                            "Data corruption, frequency value in hashmap is zero or negative."
-                        );
-                    }
-                };
-            }
-            self.summing_pool
-                .entry(self.numbers[self.curr])
-                .and_modify(|freq| *freq += 1)
-                .or_insert(1);
-            self.curr += 1;
-            true
-        }
-    }
-
-    // Returs an optional containing a tuple of the current number and another
-    // option for the pair of values that sum to it. If no valid pair has been
-    // found, the inner option will be a None value.
-    fn get_sum_curr(&self) -> Option<(i32, Option<(i32, i32)>)> {
-        if self.curr >= self.numbers.len() {
-            return None;
-        }
-
-        let curr = self.numbers[self.curr];
-        let previous = &self.numbers[self.curr - XmasBreaker::POOL_LEN..self.curr];
-        for &n in previous {
-            let complement = curr - n;
-            if complement != n && self.summing_pool.contains_key(&complement) {
-                return Some((curr, Some((n, complement))));
-            }
-        }
-        Some((curr, None))
-    }
-
-    // Returns the first value that is not a sum of the previous 25 ones, excluding
-    // the preambule.
-    fn find_weakness(&mut self) -> Option<i32> {
-        while let Some((curr, sum)) = self.get_sum_curr() {
-            if sum.is_none() {
-                return Some(curr);
-            }
-            self.advance();
-        }
-        None
-    }
-}
-
-impl FromIterator<i32> for XmasBreaker {
-    /// panics if the input iterator does not have the minimum preambule lenght.
-    fn from_iter<I: IntoIterator<Item = i32>>(iter: I) -> Self {
-        let mut ret = XmasBreaker::default();
-        ret.numbers = iter.into_iter().collect();
-        if ret.numbers.len() <= XmasBreaker::POOL_LEN {
+    /// Creates a new XmasIterator from a slice of xmas values.
+    fn new(xmas: &'a [i32]) -> Self {
+        if xmas.len() <= XmasIterator::POOL_LEN {
             panic!("Data is too small for the Xmas encryption");
         }
-        let preambule = ret.numbers.iter().take(XmasBreaker::POOL_LEN).copied();
-        for p in preambule {
-            ret.summing_pool
+
+        let mut preambule = HashMap::<i32, u8>::new();
+        for &p in xmas.iter().take(XmasIterator::POOL_LEN) {
+            preambule
                 .entry(p)
                 .and_modify(|freq| *freq += 1)
                 .or_insert(1);
         }
-        ret.curr = XmasBreaker::POOL_LEN; // current element is the one after preambule
-        ret
+
+        Self {
+            curr: XmasIterator::POOL_LEN,
+            previous: preambule,
+            xmas,
+        }
+    }
+}
+
+impl<'a> Iterator for XmasIterator<'a> {
+    type Item = (i32, Option<(i32, i32)>);
+
+    /// Returs a tuple containig the current number and an option for the pair
+    /// of values that sums to it. If no valid pair has been found, the inner
+    /// option will be None.
+    ///
+    /// A pair of values is a valid sum if:
+    /// - both values are in the set of the immediate 25 numbers before the
+    ///   current one;
+    /// - they must not be equal.
+    fn next(&mut self) -> Option<Self::Item> {
+        // check termination
+        if self.curr >= self.xmas.len() {
+            return None;
+        }
+
+        // find sum
+        let mut sum = None;
+        let curr = self.xmas[self.curr];
+        let previous = &self.xmas[self.curr - XmasIterator::POOL_LEN..self.curr];
+        for &n in previous {
+            let complement = curr - n;
+            if complement != n && self.previous.contains_key(&complement) {
+                sum = Some((n, complement));
+            }
+        }
+
+        // update iterator
+        let last = &self.xmas[self.curr - XmasIterator::POOL_LEN];
+        if let Some(freq) = self.previous.get(last) {
+            match freq.cmp(&1) {
+                Ordering::Equal => {
+                    self.previous.remove(last);
+                }
+                Ordering::Greater => {
+                    self.previous.entry(*last).and_modify(|freq| *freq -= 1);
+                }
+                Ordering::Less => {
+                    unreachable!(
+                        "Data corruption, frequency value in hashmap is zero or negative."
+                    );
+                }
+            };
+        }
+        self.previous
+            .entry(self.xmas[self.curr])
+            .and_modify(|freq| *freq += 1)
+            .or_insert(1);
+        self.curr += 1;
+
+        // returns the current number and its summing elements
+        Some((curr, sum))
     }
 }
