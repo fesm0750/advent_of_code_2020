@@ -19,13 +19,24 @@ struct XmasIterator<'a> {
 }
 
 //--------------------------------------------------------------------
-// Helpers
+// Solution
 //--------------------------------------------------------------------
 
-/// Failing parsing a number may result in the iterator prematurely ending
-fn parse_input(input_str: &str) -> Vec<i32> {
-    input_str.lines().map(str::parse::<i32>).flatten().collect()
+pub fn run() {
+    println!("Day 09");
+    let input = read::to_str("day09").unwrap();
+    let xmas = read::lines_into_vec(&input);
+    let invalid = find_invalid(&xmas).unwrap();
+    println!(
+        "First number, not in the preambule, that is not a sum of two numbers before it: {}",
+        invalid
+    );
+    println!("Encryption Weakness: {}", find_weakness(&xmas, invalid));
 }
+
+//--------------------------------------------------------------------
+// Helpers
+//--------------------------------------------------------------------
 
 /// Returs the first number in `xmas` that is not a sum of the previous
 /// `POOL_LEN` (25) values.
@@ -40,7 +51,7 @@ fn find_invalid(xmas: &[i32]) -> Option<i32> {
 }
 
 /// Finds a contiguous slice inside the `xmas` input that sums to the
-/// target value. Uses a sliding and resizeble window.
+/// target value. Uses a sliding and resizable window.
 ///
 /// # Assumptions
 /// xmas contains only positive and zero values.
@@ -84,22 +95,6 @@ fn find_weakness(xmas: &[i32], invalid: i32) -> i32 {
     let set = find_contiguous_set(xmas, invalid).unwrap();
     let (min, max) = min_max(set);
     min + max
-}
-
-//--------------------------------------------------------------------
-// Solution
-//--------------------------------------------------------------------
-
-pub fn run() {
-    println!("Day 09");
-    let input_str = read::read_to_str("day09").unwrap();
-    let xmas = parse_input(&input_str);
-    let invalid = find_invalid(&xmas).unwrap();
-    println!(
-        "First number, not in the preambule, that is not a sum of two numbers before it: {}",
-        invalid
-    );
-    println!("Encryption Weakness: {}", find_weakness(&xmas, invalid));
 }
 
 //--------------------------------------------------------------------
