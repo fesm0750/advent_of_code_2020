@@ -27,7 +27,7 @@ impl Passport {
             "hgt" => self.hgt = get(),
             "hcl" => self.hcl = get(),
             "ecl" => self.ecl = get(),
-            _ => panic!("`Unexpected key for Passport."),
+            _ => panic!("`Unexpected key '{}' for Passport.", key),
         }
     }
 
@@ -43,8 +43,8 @@ impl Passport {
 
     pub fn is_valid(&self) -> bool {
         // closure to validate range of numerical values
-        let check_range = |value: Option<u16>, min: u16, max: u16| -> bool {
-            if let Some(x) = value {
+        let check_range = |val: Option<u16>, min: u16, max: u16| -> bool {
+            if let Some(x) = val {
                 if min <= x && x <= max {
                     return true;
                 }
@@ -53,8 +53,8 @@ impl Passport {
         };
 
         // closure to validate year values
-        let check_year_range = |value: &Option<String>, min: u16, max: u16| -> bool {
-            if let Some(str) = value {
+        let check_year_range = |val: &Option<String>, min: u16, max: u16| -> bool {
+            if let Some(str) = val {
                 if str.chars().count() != 4 {
                     return false;
                 }
@@ -69,16 +69,16 @@ impl Passport {
             false
         };
 
-        let pid = {
+        let check_pid = || -> bool {
             if let Some(str) = &self.pid {
-                if str.chars().count() == 9 && str.chars().all(|c| c.is_numeric()) {
+                if str.chars().count() == 9 && str.chars().all(char::is_numeric) {
                     return true;
                 }
             }
             false
         };
 
-        let hgt = {
+        let check_hgt = || -> bool {
             if let Some(str) = &self.hgt {
                 if str.len() < 2 {
                     return false;
@@ -110,7 +110,7 @@ impl Passport {
             false
         };
 
-        let hcl = {
+        let check_hcl = || -> bool {
             if let Some(str) = &self.hcl {
                 // check for correct size
                 if str.chars().count() != 7 {
@@ -131,7 +131,7 @@ impl Passport {
             false
         };
 
-        let ecl = {
+        let check_ecl = || -> bool {
             if let Some(str) = &self.ecl {
                 match &str[..] {
                     "amb" | "blu" | "brn" | "gry" | "grn" | "hzl" | "oth" => return true,
@@ -145,7 +145,7 @@ impl Passport {
         let iyr = check_year_range(&self.iyr, 2010, 2020);
         let eyr = check_year_range(&self.eyr, 2020, 2030);
 
-        byr && iyr && eyr && pid && hgt && hcl && ecl
+        byr && iyr && eyr && check_pid() && check_hgt() && check_hcl() && check_ecl()
     }
 }
 
