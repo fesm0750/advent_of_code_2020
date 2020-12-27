@@ -1,3 +1,5 @@
+use std::{error::Error, str::FromStr};
+
 // todo: test all individual closure conditions in `is_valid`
 use crate::helpers::read;
 
@@ -148,32 +150,19 @@ impl Passport {
     }
 }
 
-// passport data is separated by spaces or new lines
-// passport entries are separated by blank lines
-/// # Assumptions
-///
-/// - input data is well behaved.
-pub fn parse_input(input: &str) -> Vec<Passport> {
-    let mut ret = vec![Passport::default()];
-    let lines = input.lines();
-    for line in lines {
-        if line.is_empty() {
-            // add next entry if blank line
-            ret.push(Passport::default());
-            continue;
-        }
-        let split_at: &[_] = &[' ', ':'];
-        let mut split = line.split(split_at).peekable();
-
+impl FromStr for Passport {
+    type Err = Box<dyn Error>;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut passport = Passport::default();
+        let split_at: &[_] = &[' ', ':', '\n'];
+        let mut split = s.split(split_at).peekable();
         while split.peek().is_some() {
             let key = split.next().unwrap();
-            let value = split.next().expect("Key without value.");
-            ret.last_mut()
-                .expect("Output Vec `ret` is empty.")
-                .add_key(key, value);
+            let val = split.next().expect("Key without value.");
+            passport.add_key(key, val);
         }
+        Ok(passport)
     }
-    ret
 }
 
 fn count_valid_simple(passports: &[Passport]) -> usize {
@@ -189,8 +178,8 @@ fn count_valid_complete(passports: &[Passport]) -> usize {
 //--------------------------------------------------------------------
 
 pub fn run() {
-    let str = read::read_to_str("day04").unwrap();
-    let passports = parse_input(&str);
+    let input = read::to_str("day04").unwrap();
+    let passports = read::split_into_vec(&input, "\n\n");
     println!("Day 04");
     println!(
         "Total of valid passports by simple method: {}",
@@ -253,9 +242,9 @@ eyr:2022
 iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719";
 
     lazy_static! {
-        static ref INPUT: Vec<Passport> = parse_input(INPUT_STR0);
-        static ref INPUT_INVALID: Vec<Passport> = parse_input(INPUT_STR_INVALID);
-        static ref INPUT_VALID: Vec<Passport> = parse_input(INPUT_STR_VALID);
+        static ref INPUT: Vec<Passport> = read::split_into_vec(INPUT_STR0, "\n\n");
+        static ref INPUT_INVALID: Vec<Passport> = read::split_into_vec(INPUT_STR_INVALID, "\n\n");
+        static ref INPUT_VALID: Vec<Passport> = read::split_into_vec(INPUT_STR_VALID, "\n\n");
     }
 
     #[test]

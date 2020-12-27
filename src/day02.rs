@@ -112,20 +112,6 @@ impl fmt::Display for ParseDay02Error {
 // Helpers
 //--------------------------------------------------------------------
 
-/// Parses a string containing the input data and returns a `Vec` of
-/// `Password`s.
-/// `input` - a string slice holding password records with entries separated by
-/// the new line character.
-pub fn parse_input(input: &str) -> Vec<PasswordRecord> {
-    input
-        .lines()
-        .map(|line| {
-            line.parse::<PasswordRecord>()
-                .expect("Invalid input record.")
-        })
-        .collect()
-}
-
 /// returns the total of valid passwords inside the array slice `passwords`,
 /// according to the old policy.
 fn count_valid_old(passwords: &[PasswordRecord]) -> usize {
@@ -143,8 +129,8 @@ fn count_valid_new(passwords: &[PasswordRecord]) -> usize {
 //--------------------------------------------------------------------
 
 pub fn run() {
-    let str = read::read_to_str("day02").unwrap();
-    let passwords = parse_input(&str);
+    let input = read::to_str("day02").unwrap();
+    let passwords = read::lines_into_vec(&input);
     println!("Day 02");
     println!(
         "Valid password count on old policy: {}",

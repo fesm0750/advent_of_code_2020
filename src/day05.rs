@@ -18,22 +18,6 @@ use std::{error::Error, str::FromStr};
 
 use crate::helpers::read;
 
-/// Returns a Vec containig the row and column codes for the boarding passes.
-/// Each boarding pass is represented by a tuple `(row_code, column_code)`.
-///
-/// If one of the input values is not valid, it is filtered out of the output.
-///
-/// # Assumptions
-///
-/// - Input is ASCII;
-pub fn parse_input(input: &str) -> Vec<BoardingPass> {
-    input
-        .lines()
-        .map(BoardingPass::from_str)
-        .filter_map(Result::ok)
-        .collect()
-}
-
 /// Returns the highest id from an array slice of `BoardingPass`es
 ///
 /// # Assumptions
@@ -61,8 +45,8 @@ fn find_seat(tickets: &[BoardingPass]) -> Option<u32> {
 //--------------------------------------------------------------------
 
 pub fn run() {
-    let str = read::read_to_str("day05").unwrap();
-    let tickets = parse_input(&str);
+    let input = read::to_str("day05").unwrap();
+    let tickets = read::lines_into_vec(&input);
     println!("Day 05");
     println!("Highest id: {}", highest_id(&tickets));
     println!("My seat: {}", find_seat(&tickets).unwrap());
@@ -213,12 +197,12 @@ mod tests {
             BoardingPass::new(14, 7),
             BoardingPass::new(102, 4),
         ];
-        assert_eq!(parse_input(INPUT_STR), out);
+        assert_eq!(read::lines_into_vec::<BoardingPass>(INPUT_STR), out);
     }
 
     #[test]
     fn test_highest_id() {
-        let tickets = parse_input(INPUT_STR);
+        let tickets = read::lines_into_vec::<BoardingPass>(INPUT_STR);
         assert_eq!(highest_id(&tickets), 820);
     }
 

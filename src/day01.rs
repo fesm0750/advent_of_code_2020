@@ -14,27 +14,6 @@ use std::cmp::Ordering;
 
 use crate::helpers::read;
 
-/// Parses a string containing the input data and returns a sorted `vec`.
-///
-/// # Arguments
-///
-///  - `input` - A string slice holding unsigned integer values separated by the
-///    new line character.
-///
-/// # Implementation Details
-///
-/// Values that are zero, negative or cannot be parsed are not included in the
-/// output.
-pub fn parse_input(input: &str) -> Vec<u32> {
-    let mut out: Vec<u32> = input
-        .lines()
-        .map(|l| if let Ok(x) = l.parse::<u32>() { x } else { 0 })
-        .filter(|&v| v > 0)
-        .collect();
-    out.sort_unstable();
-    out
-}
-
 /// Tries to find a pair that sums to a target.
 ///
 /// # Arguments
@@ -106,8 +85,8 @@ fn three_sum(sorted: &[u32], target: u32) -> Option<(u32, u32, u32)> {
 
 #[allow(clippy::many_single_char_names)]
 pub fn run() {
-    let str = read::read_to_str("day01").expect("Unable to read file.");
-    let sorted = parse_input(&str);
+    let input = read::to_str("day01").expect("Unable to read file.");
+    let sorted = read::lines_into_sorted(&input);
     // part 01
     let (a, b) = two_sum(&sorted, 2020).expect("No pair of values found.");
     // part 02
@@ -130,13 +109,14 @@ mod tests {
     lazy_static! {
         static ref INPUT: Vec<u32> = vec![282, 299, 366, 675, 979, 1456, 1721];
         static ref PARSED: Vec<u32> =
-            parse_input(&read::read_to_str("day01").expect("Unable to read file."));
+            read::lines_into_sorted(&read::to_str("day01").expect("Unable to read file."));
     }
 
     #[test]
     fn test_parser() {
-        let input = "1721\n979\n0\n366\n299\n675\n1456\n282";
-        assert_eq!(parse_input(input), *INPUT);
+        let input = "1721\n979\n366\n299\n675\n1456\n282";
+        let input: Vec<u32> = read::lines_into_sorted(input);
+        assert_eq!(input, *INPUT);
     }
 
     #[test]

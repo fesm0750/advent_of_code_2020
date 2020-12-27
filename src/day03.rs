@@ -71,8 +71,8 @@ fn count_for_many(forest: &Grid<bool>, slopes: &[Base2d<usize>]) -> Vec<u32> {
 //--------------------------------------------------------------------
 
 pub fn run() {
-    let str = read::read_to_str("day03").unwrap();
-    let forest = parse_input(&str);
+    let input = read::to_str("day03").unwrap();
+    let forest = parse_input(&input);
     // Parte 01
     println!("Day 03");
     println!(
