@@ -18,16 +18,17 @@ struct Passport {
 impl Passport {
     /// Panics if key cannot be matched.
     fn add_key(&mut self, key: &str, val: &str) {
+        let value = || -> Option<String> { Some(val.to_owned()) };
 
         match key {
-            "byr" => self.byr = get(),
-            "iyr" => self.iyr = get(),
-            "eyr" => self.eyr = get(),
-            "cid" => self.cid = get(),
-            "pid" => self.pid = get(),
-            "hgt" => self.hgt = get(),
-            "hcl" => self.hcl = get(),
-            "ecl" => self.ecl = get(),
+            "byr" => self.byr = value(),
+            "iyr" => self.iyr = value(),
+            "eyr" => self.eyr = value(),
+            "cid" => self.cid = value(),
+            "pid" => self.pid = value(),
+            "hgt" => self.hgt = value(),
+            "hcl" => self.hcl = value(),
+            "ecl" => self.ecl = value(),
             _ => panic!("`Unexpected key '{}' for Passport.", key),
         }
     }
