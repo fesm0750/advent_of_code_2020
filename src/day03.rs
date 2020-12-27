@@ -22,7 +22,7 @@ use crate::helpers::{base2d::Base2d, grid::Grid, read};
 /// # Assumptions
 ///
 /// - Input data is well behaved.
-pub fn parse_input(input: &str) -> Grid<bool> {
+fn parse_input(input: &str) -> Grid<bool> {
     let len_x = input.find('\n').unwrap();
     let flat: Vec<bool> = input
         .lines()
@@ -39,7 +39,7 @@ pub fn parse_input(input: &str) -> Grid<bool> {
 ///
 /// - `slope` - the movement of the tobogan in the forest for the `x` and `y`
 ///   directions.
-pub fn count_collisions(forest: &Grid<bool>, slope: Base2d<usize>) -> u32 {
+fn count_collisions(forest: &Grid<bool>, slope: Base2d<usize>) -> u32 {
     let mut collisions = 0;
     let (mut x, mut y) = (0, 0);
     let (dx, dy) = slope.tuple();
@@ -59,7 +59,7 @@ pub fn count_collisions(forest: &Grid<bool>, slope: Base2d<usize>) -> u32 {
 /// - `forest` - a Grid of booleans holding positions of trees and free paths.
 ///
 /// - `slopes` - an array containing slopes to run.
-pub fn count_for_many(forest: &Grid<bool>, slopes: &[Base2d<usize>]) -> Vec<u32> {
+fn count_for_many(forest: &Grid<bool>, slopes: &[Base2d<usize>]) -> Vec<u32> {
     slopes
         .iter()
         .map(|&slope| count_collisions(forest, slope))

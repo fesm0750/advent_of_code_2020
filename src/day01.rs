@@ -53,7 +53,7 @@ pub fn parse_input(input: &str) -> Vec<u32> {
 ///
 /// todo: explore alternatives using Dynamic Programming, HashSets and
 /// HashMaps.
-pub fn two_sum(sorted: &[u32], target: u32) -> Option<(u32, u32)> {
+fn two_sum(sorted: &[u32], target: u32) -> Option<(u32, u32)> {
     // filter is nice if target is a small value
     let mut iter = sorted.iter().filter(|&&x| x < target);
     let mut lo = *iter.next()?;
@@ -87,7 +87,7 @@ pub fn two_sum(sorted: &[u32], target: u32) -> Option<(u32, u32)> {
 ///
 /// todo: there is an algorithm for three_sum that uses FFT. Check Wikipedia
 /// later.
-pub fn three_sum(sorted: &[u32], target: u32) -> Option<(u32, u32, u32)> {
+fn three_sum(sorted: &[u32], target: u32) -> Option<(u32, u32, u32)> {
     let iter = sorted
         .iter()
         .enumerate()

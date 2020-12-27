@@ -30,7 +30,7 @@ use crate::helpers::read;
 /// - the pass `String` does not contain more than 255 repetitions of the same
 ///   character.
 #[derive(Debug, PartialEq, Eq)]
-pub struct PasswordRecord {
+struct PasswordRecord {
     ch: char,
     lower: u8,
     upper: u8,
@@ -39,7 +39,7 @@ pub struct PasswordRecord {
 
 impl PasswordRecord {
     /// Checks whether or not a password is valid according to the old policy.
-    pub fn is_valid_old(&self) -> bool {
+    fn is_valid_old(&self) -> bool {
         let count = self.pass.chars().filter(|&c| c == self.ch).count() as u8;
         self.lower <= count && count <= self.upper
     }
@@ -50,7 +50,7 @@ impl PasswordRecord {
     ///
     /// panics if `min` or `max` does not correlate to valid indexes for the
     /// string pass.
-    pub fn is_valid_new(&self) -> bool {
+    fn is_valid_new(&self) -> bool {
         let ch = self.ch;
         let mut chars = self.pass.chars();
         let pos1 = (self.lower - 1) as usize;
@@ -128,13 +128,13 @@ pub fn parse_input(input: &str) -> Vec<PasswordRecord> {
 
 /// returns the total of valid passwords inside the array slice `passwords`,
 /// according to the old policy.
-pub fn count_valid_old(passwords: &[PasswordRecord]) -> usize {
+fn count_valid_old(passwords: &[PasswordRecord]) -> usize {
     passwords.iter().filter(|p| p.is_valid_old()).count()
 }
 
 /// returns the total of valid passwords inside the array slice `passwords`,
 /// according to the new policy.
-pub fn count_valid_new(passwords: &[PasswordRecord]) -> usize {
+fn count_valid_new(passwords: &[PasswordRecord]) -> usize {
     passwords.iter().filter(|p| p.is_valid_new()).count()
 }
 

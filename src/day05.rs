@@ -38,13 +38,12 @@ pub fn parse_input(input: &str) -> Vec<BoardingPass> {
 ///
 /// # Assumptions
 ///
-/// `highest_id` is not empty.
-pub fn highest_id(tickets: &[BoardingPass]) -> u32 {
+fn highest_id(tickets: &[BoardingPass]) -> u32 {
     tickets.iter().map(|bp| bp.id()).max().unwrap()
 }
 
 /// Returns the id of an empty seat in between two occupied ones.
-pub fn find_seat(tickets: &[BoardingPass]) -> Option<u32> {
+fn find_seat(tickets: &[BoardingPass]) -> Option<u32> {
     let mut seats: Vec<u32> = tickets.iter().map(BoardingPass::id).collect();
     seats.sort_unstable();
     let mut seats = seats.into_iter().peekable();
@@ -74,7 +73,7 @@ pub fn run() {
 //--------------------------------------------------------------------
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct BoardingPass {
+struct BoardingPass {
     pub row: u32,
     pub col: u32,
 }
@@ -84,11 +83,11 @@ impl BoardingPass {
     const N_CHAR_ROWS: usize = 7;
     const N_CHAR_COLS: usize = 3;
 
-    pub fn new(row: u32, col: u32) -> Self {
+    fn new(row: u32, col: u32) -> Self {
         Self { row, col }
     }
 
-    pub fn id(&self) -> u32 {
+    fn id(&self) -> u32 {
         8 * self.row + self.col
     }
 
@@ -140,7 +139,7 @@ impl FromStr for BoardingPass {
 ///
 /// - if lenght of the string `code` is longer than 32 characteres;
 /// - if `code` is an invalid string.
-pub fn decode_bsp(code: &str, lower_char: char, upper_char: char) -> u32 {
+fn decode_bsp(code: &str, lower_char: char, upper_char: char) -> u32 {
     const MAX_CHARS: usize = 32;
     assert!(
         code.len() <= MAX_CHARS,

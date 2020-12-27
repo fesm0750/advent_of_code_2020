@@ -2,21 +2,20 @@
 use crate::helpers::read;
 
 #[derive(Debug, Default, PartialEq, Eq, Clone)]
-pub struct Passport {
-    pub byr: Option<String>, // birth year
-    pub iyr: Option<String>, // issue year
-    pub eyr: Option<String>, // expiration year
-    pub cid: Option<String>, // country id
-    pub pid: Option<String>, // passport id
-    pub hgt: Option<String>, // height
-    pub hcl: Option<String>, // hair colour
-    pub ecl: Option<String>, // eye colour
+struct Passport {
+    byr: Option<String>, // birth year
+    iyr: Option<String>, // issue year
+    eyr: Option<String>, // expiration year
+    cid: Option<String>, // country id
+    pid: Option<String>, // passport id
+    hgt: Option<String>, // height
+    hcl: Option<String>, // hair colour
+    ecl: Option<String>, // eye colour
 }
 
 impl Passport {
     /// Panics if key cannot be matched.
-    pub fn add_key(&mut self, key: &str, value: &str) {
-        let get = || -> Option<String> { Some(value.to_owned()) };
+    fn add_key(&mut self, key: &str, val: &str) {
 
         match key {
             "byr" => self.byr = get(),
@@ -31,7 +30,7 @@ impl Passport {
         }
     }
 
-    pub fn has_required_fields(&self) -> bool {
+    fn has_required_fields(&self) -> bool {
         self.byr.is_some()
             && self.iyr.is_some()
             && self.eyr.is_some()
@@ -41,7 +40,7 @@ impl Passport {
             && self.ecl.is_some()
     }
 
-    pub fn is_valid(&self) -> bool {
+    fn is_valid(&self) -> bool {
         // closure to validate range of numerical values
         let check_range = |val: Option<u16>, min: u16, max: u16| -> bool {
             if let Some(x) = val {
@@ -177,11 +176,11 @@ pub fn parse_input(input: &str) -> Vec<Passport> {
     ret
 }
 
-pub fn count_valid_simple(passports: &[Passport]) -> usize {
+fn count_valid_simple(passports: &[Passport]) -> usize {
     passports.iter().filter(|p| p.has_required_fields()).count()
 }
 
-pub fn count_valid_complete(passports: &[Passport]) -> usize {
+fn count_valid_complete(passports: &[Passport]) -> usize {
     passports.iter().filter(|p| p.is_valid()).count()
 }
 
