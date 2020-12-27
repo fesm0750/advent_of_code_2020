@@ -79,8 +79,8 @@ impl FromStr for PasswordRecord {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut iter = s.split(' ');
         let mut bounds = iter.next().ok_or(ParseDay02Error)?.split('-');
-        let min = bounds.next().ok_or(ParseDay02Error)?.parse::<u8>()?;
-        let max = bounds.next().ok_or(ParseDay02Error)?.parse::<u8>()?;
+        let min: u8 = bounds.next().ok_or(ParseDay02Error)?.parse()?;
+        let max: u8 = bounds.next().ok_or(ParseDay02Error)?.parse()?;
         let letter = iter
             .next()
             .ok_or(ParseDay02Error)?

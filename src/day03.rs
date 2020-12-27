@@ -17,7 +17,8 @@ use crate::helpers::{base2d::Base2d, grid::Grid, read};
 /// values representing trees (`true`) and free paths (`false`).
 ///
 /// `input` - a string whose characters represent open paths and trees. The
-/// character `#` represents trees whereas `.` stands for free paths.
+/// character `#` stands for trees whereas any other character is used to
+/// represent free paths.
 ///
 /// # Assumptions
 ///
@@ -26,7 +27,7 @@ fn parse_input(input: &str) -> Grid<bool> {
     let len_x = input.find('\n').unwrap();
     let flat: Vec<bool> = input
         .lines()
-        .map(|line| line.chars())
+        .map(str::chars)
         .flatten()
         .map(|c| c == '#')
         .collect();

@@ -14,6 +14,8 @@
 // encoded by letters. A bitwise shifting approach on a accumulator may be a
 // faster and better way to implement the decoding.
 
+// Todo: compute the id while parsing and save it inside the BoardingPass struct
+
 use std::{error::Error, str::FromStr};
 
 use crate::helpers::read;
@@ -22,6 +24,7 @@ use crate::helpers::read;
 ///
 /// # Assumptions
 ///
+/// `tickets` is not empty.
 fn highest_id(tickets: &[BoardingPass]) -> u32 {
     tickets.iter().map(|bp| bp.id()).max().unwrap()
 }
@@ -32,7 +35,7 @@ fn find_seat(tickets: &[BoardingPass]) -> Option<u32> {
     seats.sort_unstable();
     let mut seats = seats.into_iter().peekable();
     while let Some(seat) = seats.next() {
-        let peek = seats.peek().cloned();
+        let peek = seats.peek().copied();
         if peek == Some(seat + 2) {
             return Some(seat + 1);
         }
